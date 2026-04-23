@@ -1,0 +1,3 @@
+curl -X GET http://127.0.0.1:3000/200 --output test_200.jpg
+curl -X PUT --data-binary @test_200.jpg http://127.0.0.1:3000/201
+curl -X DELETE http://127.0.0.1:3000/201
