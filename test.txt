@@ -1,3 +1,30 @@
-curl -X GET http://127.0.0.1:3000/200 --output test_200.jpg
-curl -X PUT --data-binary @test_200.jpg http://127.0.0.1:3000/201
-curl -X DELETE http://127.0.0.1:3000/201
+cat > test.txt << 'EOF'
+# Тестування проксі-сервера з http.cat
+
+## Запуск сервера
+node main.js -h localhost -p 3000 -c ./cache
+
+## GET - перший запит (кеш MISS, завантажує з http.cat)
+curl -v http://localhost:3000/200
+
+## GET - другий запит (кеш HIT, бере з диска)
+curl -v http://localhost:3000/200
+
+## GET - неіснуючий код (повертає 404)
+curl -v http://localhost:3000/999
+
+## PUT - зберегти картинку в кеш
+curl -X PUT -T ./test-image.jpg http://localhost:3000/404
+
+## GET - отримати з кешу
+curl http://localhost:3000/404
+
+## DELETE - видалити з кешу
+curl -X DELETE http://localhost:3000/404
+
+## GET - після видалення знову завантажиться з http.cat
+curl http://localhost:3000/404
+
+## Метод POST (має повернути 405)
+curl -X POST http://localhost:3000/200
+EOF
